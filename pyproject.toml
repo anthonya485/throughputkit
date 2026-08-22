@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "throughputkit"
+version = "0.1.0"
+description = "Parse and format byte sizes and durations, with human and JSON output modes."
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "MIT"}
+authors = [{name = "anthonya485"}]
+
+[tool.setuptools.packages.find]
+where = ["src"]
