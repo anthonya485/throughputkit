@@ -45,6 +45,13 @@ class ParseBytesTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             parse_bytes("-5MB")
 
+    def test_rejects_overflow(self):
+        # A finite input number can still overflow past float's range once
+        # multiplied by a PB-scale multiplier; that should raise ValueError
+        # rather than the OverflowError int() would otherwise produce.
+        with self.assertRaises(ValueError):
+            parse_bytes("1" + "0" * 300 + "PB")
+
 
 class FormatBytesTests(unittest.TestCase):
     def test_zero(self):

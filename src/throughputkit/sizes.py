@@ -1,5 +1,6 @@
 """Parsing and formatting for byte quantities."""
 
+import math
 import re
 
 # Bare letter suffixes (K, M, G, ...) follow the du/ls -h convention and mean
@@ -35,7 +36,14 @@ def parse_bytes(text):
     else:
         raise ValueError(f"unknown size unit {unit!r} in {text!r}")
 
-    return int(float(number) * multiplier)
+    value = float(number) * multiplier
+    # A finite input number can still overflow past float's range once
+    # multiplied by a PB-scale multiplier; catch that here rather than
+    # letting int() below raise an OverflowError for an out-of-range size.
+    if not math.isfinite(value):
+        raise ValueError(f"byte size out of range: {text!r}")
+
+    return int(value)
 
 
 def format_bytes(n_bytes, binary=True, precision=1):

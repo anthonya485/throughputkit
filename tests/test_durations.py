@@ -33,11 +33,22 @@ class ParseDurationTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             parse_duration("abc")
 
-    def test_bare_number_accepts_negative(self):
-        # float() accepts a leading "-", so a bare negative number currently
-        # parses instead of being rejected. Documented here as current
-        # behavior, not a guarantee.
-        self.assertEqual(parse_duration("-5"), -5.0)
+    def test_rejects_negative(self):
+        with self.assertRaises(ValueError):
+            parse_duration("-5")
+
+    def test_rejects_non_finite(self):
+        # float() accepts "inf"/"nan" strings; those aren't valid durations.
+        with self.assertRaises(ValueError):
+            parse_duration("inf")
+        with self.assertRaises(ValueError):
+            parse_duration("nan")
+
+    def test_rejects_overflow(self):
+        # A token sum that overflows past float's range should raise
+        # ValueError, not silently return inf.
+        with self.assertRaises(ValueError):
+            parse_duration("1" + "0" * 400 + "d")
 
 
 class FormatDurationTests(unittest.TestCase):

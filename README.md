@@ -77,6 +77,7 @@ print(result.render(as_json=args.json))
 
 ## Status
 
-Early. Sizes and durations round-trip correctly for the common cases; error
-messages and edge cases (negative durations, overflow, locale-specific
-number formats) still need work. See the roadmap in the repo's issues.
+Early. Sizes and durations round-trip correctly for the common cases, and
+negative and overflow inputs are now rejected consistently across both
+parsers. Locale-specific number formats still need work. See the roadmap in
+the repo's issues.
