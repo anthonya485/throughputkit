@@ -33,6 +33,11 @@ parse_bytes("1.5MB")      # 1500000
 parse_bytes("2GiB")       # 2147483648
 parse_bytes("900K")       # 921600  (bare letters mean binary, like `ls -h`)
 
+# Either '.' or ',' works as the decimal point. Whichever one repeats, or
+# comes second when both appear, is treated as a thousands separator instead.
+parse_bytes("1,5MB")        # 1500000  (EU-style decimal comma)
+parse_bytes("1.234,5MB")    # 1234500000
+
 format_bytes(1536)              # "1.5 KiB"
 format_bytes(1536, binary=False)  # "1.5 KB"
 ```
@@ -79,5 +84,6 @@ print(result.render(as_json=args.json))
 
 Early. Sizes and durations round-trip correctly for the common cases, and
 negative and overflow inputs are now rejected consistently across both
-parsers. Locale-specific number formats still need work. See the roadmap in
-the repo's issues.
+parsers. `parse_bytes` accepts locale-style decimal commas and thousands
+separators; `parse_duration` doesn't yet. See the roadmap in the repo's
+issues.

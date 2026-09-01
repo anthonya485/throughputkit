@@ -3,6 +3,8 @@
 import math
 import re
 
+from ._numbers import parse_localized_number
+
 # Bare letter suffixes (K, M, G, ...) follow the du/ls -h convention and mean
 # binary (1024-based) units. Explicit "KB"/"KiB" spell out which base is meant.
 _DECIMAL_UNITS = {"B": 1, "KB": 1000, "MB": 1000**2, "GB": 1000**3, "TB": 1000**4, "PB": 1000**5}
@@ -15,11 +17,16 @@ _BINARY_UNITS = {
     "P": 1024**5, "PIB": 1024**5,
 }
 
-_NUMBER_UNIT_RE = re.compile(r"^\s*([0-9]*\.?[0-9]+)\s*([A-Za-z]*)\s*$")
+_NUMBER_UNIT_RE = re.compile(r"^\s*([0-9]+(?:[.,][0-9]+)*|[.,][0-9]+)\s*([A-Za-z]*)\s*$")
 
 
 def parse_bytes(text):
-    """Parse a size string like "512", "1.5MB", "2 GiB", or "900K" into an int byte count."""
+    """Parse a size string into an int byte count.
+
+    Accepts plain numbers ("512"), decimal or binary units ("1.5MB",
+    "2 GiB", "900K"), and either '.' or ',' as the decimal point, with the
+    other character usable as a thousands separator ("1,500.5MB", "1.500,5MB").
+    """
     match = _NUMBER_UNIT_RE.match(text)
     if not match:
         raise ValueError(f"not a byte size: {text!r}")
@@ -36,7 +43,10 @@ def parse_bytes(text):
     else:
         raise ValueError(f"unknown size unit {unit!r} in {text!r}")
 
-    value = float(number) * multiplier
+    try:
+        value = parse_localized_number(number) * multiplier
+    except ValueError:
+        raise ValueError(f"not a byte size: {text!r}") from None
     # A finite input number can still overflow past float's range once
     # multiplied by a PB-scale multiplier; catch that here rather than
     # letting int() below raise an OverflowError for an out-of-range size.

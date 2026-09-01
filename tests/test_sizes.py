@@ -53,6 +53,32 @@ class ParseBytesTests(unittest.TestCase):
             parse_bytes("1" + "0" * 300 + "PB")
 
 
+class ParseBytesLocalizedNumberTests(unittest.TestCase):
+    # A lone comma or dot is ambiguous between "decimal point" and "thousands
+    # separator" (is "1,500" one-point-five or fifteen hundred?), so a single
+    # occurrence is always read as the decimal point. Grouping is only
+    # recognized when it's unambiguous: the separator repeats, or both
+    # separators appear together (the last one is then the decimal point).
+    def test_comma_decimal_point(self):
+        self.assertEqual(parse_bytes("1,5MB"), 1_500_000)
+
+    def test_us_thousands_grouping(self):
+        self.assertEqual(parse_bytes("1,234,567"), 1_234_567)
+
+    def test_eu_thousands_grouping(self):
+        self.assertEqual(parse_bytes("1.234.567"), 1_234_567)
+
+    def test_us_grouping_with_decimal(self):
+        self.assertEqual(parse_bytes("1,234.5MB"), 1_234_500_000)
+
+    def test_eu_grouping_with_decimal(self):
+        self.assertEqual(parse_bytes("1.234,5MB"), 1_234_500_000)
+
+    def test_rejects_bad_grouping(self):
+        with self.assertRaises(ValueError):
+            parse_bytes("1,23,456MB")
+
+
 class FormatBytesTests(unittest.TestCase):
     def test_zero(self):
         self.assertEqual(format_bytes(0), "0 B")
