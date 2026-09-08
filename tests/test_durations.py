@@ -51,6 +51,27 @@ class ParseDurationTests(unittest.TestCase):
             parse_duration("1" + "0" * 400 + "d")
 
 
+class ParseDurationLocalizedNumberTests(unittest.TestCase):
+    def test_comma_decimal_point_bare(self):
+        self.assertEqual(parse_duration("1,5"), 1.5)
+
+    def test_comma_decimal_point_in_token(self):
+        self.assertEqual(parse_duration("1,5s"), 1.5)
+
+    def test_eu_grouping_with_decimal(self):
+        self.assertEqual(parse_duration("1.234,5s"), 1234.5)
+
+    def test_us_grouping_bare(self):
+        self.assertEqual(parse_duration("1,234,567"), 1_234_567.0)
+
+    def test_compound_with_decimal_comma(self):
+        self.assertEqual(parse_duration("1m30,5s"), 90.5)
+
+    def test_rejects_bad_grouping(self):
+        with self.assertRaises(ValueError):
+            parse_duration("1,23,456s")
+
+
 class FormatDurationTests(unittest.TestCase):
     def test_zero(self):
         self.assertEqual(format_duration(0), "0s")

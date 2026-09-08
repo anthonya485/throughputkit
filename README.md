@@ -51,6 +51,10 @@ parse_duration("90")       # 90.0
 parse_duration("1m30s")    # 90.0
 parse_duration("2h")       # 7200.0
 
+# Same locale-style decimal point rules as parse_bytes.
+parse_duration("1,5s")     # 1.5
+parse_duration("1m30,5s")  # 90.5
+
 format_duration(3725)      # "1h 2m 5s"
 format_duration(0.25)      # "250ms"
 ```
@@ -84,6 +88,5 @@ print(result.render(as_json=args.json))
 
 Early. Sizes and durations round-trip correctly for the common cases, and
 negative and overflow inputs are now rejected consistently across both
-parsers. `parse_bytes` accepts locale-style decimal commas and thousands
-separators; `parse_duration` doesn't yet. See the roadmap in the repo's
-issues.
+parsers. Both `parse_bytes` and `parse_duration` accept locale-style decimal
+commas and thousands separators. See the roadmap in the repo's issues.

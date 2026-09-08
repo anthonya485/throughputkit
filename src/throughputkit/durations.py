@@ -3,23 +3,29 @@
 import math
 import re
 
+from ._numbers import parse_localized_number
+
 _UNIT_SECONDS = {"d": 86400, "h": 3600, "m": 60, "s": 1, "ms": 0.001}
-_TOKEN_RE = re.compile(r"([0-9]*\.?[0-9]+)\s*(ms|d|h|m|s)")
+_TOKEN_RE = re.compile(r"([0-9]+(?:[.,][0-9]+)*|[.,][0-9]+)\s*(ms|d|h|m|s)")
 
 
 def parse_duration(text):
-    """Parse a duration string like "90", "1m30s", "2h", or "1d 2h 3m" into seconds."""
+    """Parse a duration string like "90", "1m30s", "2h", or "1d 2h 3m" into
+    seconds. Numbers accept either '.' or ',' as the decimal point, same as
+    parse_bytes, e.g. "1,5s" or "1m30,5s".
+    """
     text = text.strip()
     if not text:
         raise ValueError("empty duration string")
 
     # A bare number means seconds, matching how most tools already accept a timeout value.
     try:
-        value = float(text)
+        value = parse_localized_number(text)
     except ValueError:
         pass
     else:
-        # float() happily accepts "-5", "inf", and "nan"; reject those here
+        # parse_localized_number happily accepts "-5", "inf", and "nan" (via
+        # float() for numbers without a decimal point); reject those here
         # instead of handing format_duration a value it can't render.
         if not math.isfinite(value):
             raise ValueError(f"not a duration: {text!r}")
@@ -37,7 +43,10 @@ def parse_duration(text):
     if re.sub(r"\s+", "", text) != consumed:
         raise ValueError(f"not a duration: {text!r}")
 
-    total = sum(float(value) * _UNIT_SECONDS[unit] for value, unit in tokens)
+    try:
+        total = sum(parse_localized_number(value) * _UNIT_SECONDS[unit] for value, unit in tokens)
+    except ValueError:
+        raise ValueError(f"not a duration: {text!r}") from None
     if not math.isfinite(total):
         raise ValueError(f"duration out of range: {text!r}")
     return total
