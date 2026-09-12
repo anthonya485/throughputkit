@@ -1,5 +1,5 @@
 from .durations import format_duration, parse_duration
-from .report import Measurement
+from .report import Measurement, Progress
 from .sizes import format_bytes, parse_bytes
 
 __all__ = [
@@ -8,4 +8,5 @@ __all__ = [
     "format_duration",
     "parse_duration",
     "Measurement",
+    "Progress",
 ]

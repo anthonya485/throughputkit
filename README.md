@@ -70,6 +70,22 @@ print(m.render(as_json=True))
 # {"label": "backup", "bytes": 1500000000, "seconds": 42.5, "bytes_per_sec": 35294117.65}
 ```
 
+Reporting progress on a transfer that's still running, with an ETA
+extrapolated from the current rate:
+
+```python
+from throughputkit import Progress
+
+p = Progress(label="upload", bytes_done=500_000_000, bytes_total=1_500_000_000, seconds_elapsed=12.0)
+print(p.render())            # "upload: 476.8 MiB/1.4 GiB (33%) at 39.7 MiB/s, ETA 24s"
+print(p.render(as_json=True))
+# {"label": "upload", "bytes_done": 500000000, "bytes_total": 1500000000, "seconds_elapsed": 12.0, "bytes_per_sec": 41666666.67, "eta_seconds": 24.0}
+```
+
+`eta_seconds` is `None` until some progress has been made (there's no rate
+to extrapolate from yet), and `0.0` once `bytes_done` reaches or passes
+`bytes_total`.
+
 A typical wiring into a script's own argument parser:
 
 ```python
