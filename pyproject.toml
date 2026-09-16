@@ -10,6 +10,26 @@ readme = "README.md"
 requires-python = ">=3.9"
 license = {text = "MIT"}
 authors = [{name = "anthonya485"}]
+keywords = ["bytes", "duration", "human-readable", "formatting", "parsing"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: System :: Monitoring",
+]
+
+[project.urls]
+Homepage = "https://github.com/anthonya485/throughputkit"
+Repository = "https://github.com/anthonya485/throughputkit"
+Issues = "https://github.com/anthonya485/throughputkit/issues"
 
 [tool.setuptools.packages.find]
 where = ["src"]
